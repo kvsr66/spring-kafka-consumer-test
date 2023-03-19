@@ -64,12 +64,10 @@ public class KafkaConsumerTest {
         MockitoAnnotations.openMocks(this);
         Map<String, Object> configs = new HashMap<>(KafkaTestUtils.producerProps(embeddedKafkaBroker));
         producer = new DefaultKafkaProducerFactory<>(configs, new StringSerializer(), new StringSerializer()).createProducer();
-  //      processDetailsRepo = Mockito.mock(ProcessDetailsRepo.class);
-//        eventDetailsRepo = Mockito.mock(EventDetailsRepo.class);
+
         try {
 
-            String path = "D:\\subbu\\workspaces\\intellij-workspace\\KafkaConsumerSample\\src\\test\\resources\\events.json";
-            String path1 = "../src/test/resources/events.json";
+            String path = "../src/test/resources/events.json";
             File file = new File(path);
             message = new String(Files.readAllBytes(file.toPath()));
 
@@ -82,14 +80,7 @@ public class KafkaConsumerTest {
 
     @Test
     void testKafkaConsumerListener(){
-
-//        String message = "{\n" +
-//                "  \"name\": \"event1\",\n" +
-//                "  \"id\": 1,\n" +
-//                "  \"processName\": \"process1\",\n" +
-//                "  \"processId\": 12\n" +
-//                "}";
-
+        
         Mockito.when(eventDetailsRepo.save(new EventDetails())).thenReturn(new EventDetails());
         Mockito.when(processDetailsRepo.save(new ProcessDetails())).thenReturn(new ProcessDetails());
 
@@ -98,7 +89,6 @@ public class KafkaConsumerTest {
 
         //Verify that the listener method should be called only one time during this test run
         Mockito.verify(consumer, Mockito.timeout(5000).times(1)).processMessage(message);
-
 
     }
 
