@@ -1,6 +1,6 @@
 {
   "name": "event1",
-  "id": 1,
+  "eventId": 1,
   "processName": "process1",
   "processId": 12
 }
