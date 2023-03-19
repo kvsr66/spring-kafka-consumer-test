@@ -1,0 +1,20 @@
+server:
+  port: 8000
+
+spring:
+  kafka:
+    bootstrap-servers:
+      - localhost:9092
+    consumer:
+      bootstrap-servers:
+        - localhost:9092
+      group-id: group1
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+    producer:
+      bootstrap-servers:
+        - localhost:9092
+      client-id: client-1
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
