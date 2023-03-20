@@ -1,24 +1,18 @@
 package com.example.kafka.consumer;
 
+import com.example.kafka.EventProcessService;
 import com.example.kafka.KafkaTestConsumerListenerConfig;
-import com.example.kafka.consumer.model.EventDetails;
-import com.example.kafka.consumer.model.ProcessDetails;
-import com.example.kafka.dao.EventDetailsRepo;
 import com.example.kafka.dao.EventsProcessDao;
-import com.example.kafka.dao.ProcessDetailsRepo;
+import com.example.kafka.model.EventDetails;
+import com.example.kafka.model.ProcessDetails;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.annotation.Import;
@@ -33,6 +27,8 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.mockito.Mockito.*;
+
 
 @Import(KafkaTestConsumerListenerConfig.class)
 @SpringBootTest
@@ -41,14 +37,9 @@ import java.util.Map;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class KafkaConsumerTest {
 
-
-    @Mock
-    EventDetailsRepo eventDetailsRepo;
-
-    @Mock
-    ProcessDetailsRepo processDetailsRepo;
-
     @InjectMocks
+    EventProcessService service;
+    @Mock
     EventsProcessDao dao;
     String TOPIC_NAME = "test";
     @Autowired
@@ -64,8 +55,7 @@ public class KafkaConsumerTest {
         MockitoAnnotations.openMocks(this);
         Map<String, Object> configs = new HashMap<>(KafkaTestUtils.producerProps(embeddedKafkaBroker));
         producer = new DefaultKafkaProducerFactory<>(configs, new StringSerializer(), new StringSerializer()).createProducer();
-  //      processDetailsRepo = Mockito.mock(ProcessDetailsRepo.class);
-//        eventDetailsRepo = Mockito.mock(EventDetailsRepo.class);
+
         try {
 
             String path = "D:\\subbu\\workspaces\\intellij-workspace\\KafkaConsumerSample\\src\\test\\resources\\events.json";
@@ -83,26 +73,32 @@ public class KafkaConsumerTest {
     @Test
     void testKafkaConsumerListener(){
 
-//        String message = "{\n" +
-//                "  \"name\": \"event1\",\n" +
-//                "  \"id\": 1,\n" +
-//                "  \"processName\": \"process1\",\n" +
-//                "  \"processId\": 12\n" +
-//                "}";
 
-        Mockito.when(eventDetailsRepo.save(new EventDetails())).thenReturn(new EventDetails());
-        Mockito.when(processDetailsRepo.save(new ProcessDetails())).thenReturn(new ProcessDetails());
+        when(dao.saveEvent(any(EventDetails.class))).thenReturn(new EventDetails());
+        when(dao.saveProcessDetails(any(ProcessDetails.class))).thenReturn(new ProcessDetails());
 
         producer.send(new ProducerRecord<>(TOPIC_NAME, 0, null, message));
         producer.flush();
 
         //Verify that the listener method should be called only one time during this test run
-        Mockito.verify(consumer, Mockito.timeout(5000).times(1)).processMessage(message);
-
+        verify(consumer, timeout(5000).times(1)).processMessage(message);
 
     }
 
+    @Test
+    public void testEventService(){
 
+        when(dao.saveEvent(any(EventDetails.class))).thenReturn(new EventDetails());
+        when(dao.saveProcessDetails(any(ProcessDetails.class))).thenReturn(new ProcessDetails());
+
+        EventDetails eventDetails = service.saveEvent(new EventDetails());
+        ProcessDetails processDetails = service.saveProcess(new ProcessDetails());
+
+        Assertions.assertNotNull(eventDetails);
+        Assertions.assertNotNull(processDetails);
+
+
+    }
     @AfterAll
     void shutdown() {
         producer.close();

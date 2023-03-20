@@ -1,7 +1,8 @@
 package com.example.kafka.consumer;
 
-import com.example.kafka.consumer.model.EventDetails;
-import com.example.kafka.consumer.model.ProcessDetails;
+import com.example.kafka.EventProcessService;
+import com.example.kafka.model.EventDetails;
+import com.example.kafka.model.ProcessDetails;
 import com.example.kafka.dao.EventsProcessDao;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,7 @@ public class CustomKafkaConsumerListener {
 
 
     @Autowired
-   EventsProcessDao dao;
+    EventProcessService service;
 
     @KafkaListener(topics = {"test"}, groupId = "group1", containerFactory =  "listenerContainerFactory")
     public void processMessage(String message){
@@ -28,7 +29,7 @@ public class CustomKafkaConsumerListener {
             System.out.println(event);
 
             if(event!=null){
-                dao.saveEvent(event);
+                service.saveEvent(event);
 
                 System.out.println("Event details saved");
             }
@@ -38,7 +39,7 @@ public class CustomKafkaConsumerListener {
             System.out.println(process);
 
             if(process!=null){
-                dao.saveProcessDetails(process);
+                service.saveProcess(process);
 
                 System.out.println("Process details saved");
             }

@@ -1,7 +1,7 @@
 package com.example.kafka.dao;
 
-import com.example.kafka.consumer.model.EventDetails;
-import com.example.kafka.consumer.model.ProcessDetails;
+import com.example.kafka.model.EventDetails;
+import com.example.kafka.model.ProcessDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

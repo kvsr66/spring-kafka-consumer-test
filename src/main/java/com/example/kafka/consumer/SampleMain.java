@@ -1,7 +1,7 @@
 package com.example.kafka.consumer;
 
-import com.example.kafka.consumer.model.EventDetails;
-import com.example.kafka.consumer.model.ProcessDetails;
+import com.example.kafka.model.EventDetails;
+import com.example.kafka.model.ProcessDetails;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class SampleMain {
